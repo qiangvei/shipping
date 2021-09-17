@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="static/layui/css/layui.css" rel="stylesheet">
+    <link href="static/weiui/css/weiui.css" rel="stylesheet">
+    <script src="static/jquery.js"></script>
+    <script src="static/jquery.base64.min.js"></script>
+    <title>Shipping Manage System</title>
+    <style>
+        .layui-body{
+            left: 0;
+        }
+        .layui-layout-admin .layui-body{
+            padding-bottom: 40px;
+            height: calc(100% - 100px);
+        }
+        .layui-layout-admin .layui-footer{
+            left: 0;
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+        }
+        iframe.mainiframe{
+            height: calc(100vh - 160px); /*计算度度 calc是css函数，可在内加减乘除*/
+        }
+        .weiui-tab{
+            margin: 0 0;
+        }
+        .weiui-tab .layui-tab-content{
+            padding: 0 0;
+        }
+        .weiui-tab-notclose i.layui-tab-close{
+            /*具有该类的关闭按钮不显示*/
+            display:none !important;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-layout-admin">
+    <div class="layui-header layui-bg-cyan">
+        <a class="layui-logo layui-hide-xs layui-bg-black">Shipping Quote</a>
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item layui-hide-xs">
+                <a class="weiui-nav-click" weiui-url="index/android" title="安卓">
+                    <i class="layui-icon layui-icon-android font-28"></i>
+                </a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs">
+                <a class="weiui-nav-click" weiui-url="index/test" title="测试">
+                    <i class="layui-icon layui-icon-table font-28"></i>
+                </a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs">
+                <a class="weiui-nav-click" weiui-url="index/import" title="导入">
+                    <i class="layui-icon layui-icon-upload font-28"></i>
+                </a>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-username layui-font-18"></i>
+                    admin
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:;">信 息</a></dd>
+                    <dd><a href="javascript:;">设 置</a></dd>
+                    <dd><a href="javascript:;">退 出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-body">
+        <div class="layui-tab layui-tab-brief weiui-tab" lay-filter="mainTabs" lay-allowclose="true">
+            <ul class="layui-tab-title">
+                <li class="layui-this weiui-tab-notclose" lay-id="home">
+                    <i class="layui-icon layui-icon-home"></i>
+                    首页
+                </li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <iframe class="mainiframe" weiuiid="'+id+'" width="100%" height="100%" src="index/home"  frameborder="0" scrolling="auto"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        <div class="layui-font-12 layui-box" style="float: right;padding: 0 30px 0 0;">shipping quote v.1.0</div>
+    </div>
+</div>
+<script src="static/layui/layui.js"></script>
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        layui.use(['layer','element'], function () {
+            var element = layui.element;
+
+            var tabId = 'mainTabs';
+            $('.weiui-nav-click').on('click',function (){
+                var url = $(this).attr('weiui-url');
+                var title = $(this).attr('title');
+                title = $.trim(title)==''?url:title;
+                if(url){
+                    var id = $.base64.encode(url);
+                    var ifExistId = false;
+                    //判断是否已经存在
+                    $('.weiui-tab>.layui-tab-title').children().each(function (index,item) {
+                        if($(item).attr('lay-id') == id){
+                            ifExistId = true;
+                            return false;
+                        }
+                    });
+                    if(ifExistId){
+                        element.tabChange(tabId,id);
+                        return false;
+                    }
+                    element.tabAdd(tabId, {
+                        title: title,
+                        content: '<iframe class="mainiframe" weiuiid="'+id+'" width="100%" height="100%" src="'+url+'"  frameborder="0" scrolling="auto"></iframe>',
+                        id: id,
+                    });
+                    element.tabChange(tabId,id);
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>
