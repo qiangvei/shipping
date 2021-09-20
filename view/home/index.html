@@ -1,0 +1,100 @@
+{extend name="base" /}
+{block name="main"}
+<table id="table" lay-filter="table"></table>
+
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+    </div>
+</script>
+
+<script type="text/html" id="rowbar">
+    {{# if(d.right==1){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    {{#}else{ }}
+    <a class="layui-btn layui-btn-xs layui-btn-disabled" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs layui-btn-disabled" lay-event="del">删除</a>
+    {{# } }}
+</script>
+{/block}
+{block name="js"}
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#table'
+            ,url:'ShippingQuotedPrice/getData'
+            ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+            ,title: '运费报价数据表'
+            ,cols: [
+                [
+                    {type: 'checkbox', rowspan:2}
+                    ,{field:'pk', title:'ID', width:80, unresize: true, sort: true , rowspan:2}
+                    ,{field:'dest_country_id', title:'国家', minWidth:120 , rowspan:2}
+                    ,{field:'dest_region_id', title:'地区', minWidth:120, sort: true , rowspan:2}
+                    ,{field:'dest_zip', title:'邮编', minWidth:120 , rowspan:2}
+                    ,{field:'weight', title:'重量(大于)', minWidth:120 , rowspan:2}
+                    ,{field:'price', title:'价格', minWidth:120, sort: true , rowspan:2}
+                    ,{field:'', title:'服务商', minWidth:240, colspan:2}
+                    ,{field:'method_code', title:'方式' , minWidth:240, colspan:2}
+                    ,{field: 'addtime', title:'更新时间', minWidth:120,rowspan:2}
+                    ,{fixed: 'right', title:'操作', toolbar: '#rowbar', minWidth:150 , rowspan:2}
+                ],
+                [
+                    {field:'carrier_code', title:'代码', width:120}
+                    ,{field:'carrier_title', title:'标题', width:100}
+                    ,{field:'method_code', title:'代码', width:120}
+                    ,{field: 'method_title', title:'标题', width:120}
+                ]
+            ]
+            ,page: true
+            ,height: 'full-20'
+            ,even: false    //开启隔行背景
+        });
+
+        //头工具栏事件
+        table.on('toolbar(toolbar)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(rowbar)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                    formType: 2
+                    ,value: data.email
+                }, function(value, index){
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>
+{/block}

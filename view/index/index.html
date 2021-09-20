@@ -7,7 +7,7 @@
     <link href="static/weiui/css/weiui.css" rel="stylesheet">
     <script src="static/jquery.js"></script>
     <script src="static/jquery.base64.min.js"></script>
-    <title>Shipping Manage System</title>
+    <title>主页</title>
     <style>
         .layui-body{
             left: 0;
@@ -23,7 +23,7 @@
             line-height: 40px;
         }
         iframe.mainiframe{
-            height: calc(100vh - 160px); /*计算度度 calc是css函数，可在内加减乘除*/
+            height: calc(100vh - 130px); /*计算度度 calc是css函数，可在内加减乘除*/
         }
         .weiui-tab{
             margin: 0 0;
@@ -42,34 +42,43 @@
     <div class="layui-header layui-bg-cyan">
         <a class="layui-logo layui-hide-xs layui-bg-black">Shipping Quote</a>
         <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item layui-hide-xs">
-                <a class="weiui-nav-click" weiui-url="index/android" title="安卓">
-                    <i class="layui-icon layui-icon-android font-28"></i>
-                </a>
-            </li>
-            <li class="layui-nav-item layui-hide-xs">
-                <a class="weiui-nav-click" weiui-url="index/test" title="测试">
-                    <i class="layui-icon layui-icon-table font-28"></i>
-                </a>
-            </li>
-            <li class="layui-nav-item layui-hide-xs">
-                <a class="weiui-nav-click" weiui-url="index/import" title="导入">
-                    <i class="layui-icon layui-icon-upload font-28"></i>
-                </a>
-            </li>
+<!--            <li class="layui-nav-item layui-hide-xs">-->
+<!--                <a class="weiui-nav-click" weiui-url="index/android" title="安卓">-->
+<!--                    <i class="layui-icon layui-icon-android font-28"></i>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="layui-nav-item layui-hide-xs">-->
+<!--                <a class="weiui-nav-click" weiui-url="index/test" title="测试">-->
+<!--                    <i class="layui-icon layui-icon-table font-28"></i>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="layui-nav-item layui-hide-xs">-->
+<!--                <a class="weiui-nav-click" weiui-url="index/import" title="导入">-->
+<!--                    <i class="layui-icon layui-icon-upload font-28"></i>-->
+<!--                </a>-->
+<!--            </li>-->
         </ul>
         <ul class="layui-nav layui-layout-right">
+            {if $user=='' }
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block">
+                <a href="javascript:;" class="weiui-nav-user-click" weiui-url="user/login">
+                    <i class="layui-icon layui-icon-username layui-font-18"></i>
+                    登陆
+                </a>
+            </li>
+            {else /}
             <li class="layui-nav-item layui-hide layui-show-md-inline-block">
                 <a href="javascript:;">
                     <i class="layui-icon layui-icon-username layui-font-18"></i>
-                    admin
+                    {$user.username}
                 </a>
                 <dl class="layui-nav-child">
-                    <dd><a href="javascript:;">信 息</a></dd>
-                    <dd><a href="javascript:;">设 置</a></dd>
-                    <dd><a href="javascript:;">退 出</a></dd>
+<!--                    <dd class="weiui-nav-click" weiui-url="user/info"><a href="javascript:;">信 息</a></dd>-->
+<!--                    <dd class="weiui-nav-click" weiui-url="user/setting"><a href="javascript:;">设 置</a></dd>-->
+                    <dd class="weiui-logout-click" weiui-url="user/loginout"><a href="javascript:;">退 出</a></dd>
                 </dl>
             </li>
+            {/if}
         </ul>
     </div>
     <div class="layui-body">
@@ -82,7 +91,7 @@
             </ul>
             <div class="layui-tab-content">
                 <div class="layui-tab-item layui-show">
-                    <iframe class="mainiframe" weiuiid="'+id+'" width="100%" height="100%" src="index/home"  frameborder="0" scrolling="auto"></iframe>
+                    <iframe class="mainiframe" weiuiid="'+id+'" width="100%" height="100%" src="home"  frameborder="0" scrolling="auto"></iframe>
                 </div>
             </div>
         </div>
@@ -124,6 +133,32 @@
                         id: id,
                     });
                     element.tabChange(tabId,id);
+                }
+            });
+
+            $('.weiui-nav-user-click').on('click',function (){
+                var url = $(this).attr('weiui-url');
+                if(url){
+                    layer.open({
+                        type: 2,
+                        title: '登陆',
+                        content: [url,'no'],
+                        area: ['500px', '300px']
+                    });
+                }
+            });
+            $('.weiui-logout-click').on('click',function (){
+                var url = $(this).attr('weiui-url');
+                if(url){
+                    $.post(url,{},function (p){
+                        if(p==1){
+                            location.href = '/';
+                        }else{
+                            layer.msg('退出失败，请刷新后再试！');
+                        }
+                    }).fail(function (p1){
+                        layer.msg(p1.statusText +' : '+p1.status);
+                    });
                 }
             });
         });

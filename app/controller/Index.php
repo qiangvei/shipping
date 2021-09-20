@@ -8,10 +8,8 @@ class Index extends BaseController
 {
     public function index()
     {
+        View::assign('user',session('user'));
         return View::fetch();
-    }
-    public function home(){
-        return 'home';
     }
     public function test(){
         return json(['200H','300H']);

@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace app\controller;
 
+use app\model\SpShippingFee;
 use think\Request;
 
 class ShippingQuotedPrice
@@ -15,6 +16,15 @@ class ShippingQuotedPrice
     public function index()
     {
         //
+    }
+
+    public function getData(){
+        $data = SpShippingFee::select();
+        $count = SpShippingFee::count();
+        for($i=0;$i<count($data);$i++){
+            $data[$i]['right'] = 0;
+        }
+        return json(['code'=>0,'msg'=>'完成','count'=>$count,'data'=>$data]);
     }
 
     /**
