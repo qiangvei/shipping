@@ -9,6 +9,7 @@ class Home
 {
     public function index()
     {
+        View::assign('right',session('user')?1:0);
         return View::fetch();
     }
 }

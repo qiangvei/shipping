@@ -15,6 +15,4 @@ Route::get('think', function () {
 });
 
 
-//Route::miss(function (){
-//   return '404 Not Found';
-//});
+Route::get('api/:name','api.:name/read');

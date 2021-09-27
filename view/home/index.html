@@ -3,11 +3,17 @@
 <table id="table" lay-filter="table"></table>
 
 <script type="text/html" id="toolbar">
-    <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
-        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
-        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
-    </div>
+<!--    <div class="layui-btn-container">-->
+<!--        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>-->
+<!--        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>-->
+<!--        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>-->
+<!--    </div>-->
+    {if $right=='1'}
+    <button type="button" class="layui-btn" id="upload">
+        <i class="layui-icon layui-icon-upload"></i>
+        导入
+    </button>
+    {/if}
 </script>
 
 <script type="text/html" id="rowbar">
@@ -22,9 +28,9 @@
 {/block}
 {block name="js"}
 <script>
-    layui.use('table', function(){
+    layui.use(['table','upload'], function(){
         var table = layui.table;
-
+        var upload = layui.upload;
         table.render({
             elem: '#table'
             ,url:'ShippingQuotedPrice/getData'
@@ -34,15 +40,15 @@
                 [
                     {type: 'checkbox', rowspan:2}
                     ,{field:'pk', title:'ID', width:80, unresize: true, sort: true , rowspan:2}
-                    ,{field:'dest_country_id', title:'国家', minWidth:120 , rowspan:2}
+                    ,{field:'dest_country_id', title:'国家', minWidth:120, sort: true , rowspan:2}
                     ,{field:'dest_region_id', title:'地区', minWidth:120, sort: true , rowspan:2}
                     ,{field:'dest_zip', title:'邮编', minWidth:120 , rowspan:2}
-                    ,{field:'weight', title:'重量(大于)', minWidth:120 , rowspan:2}
-                    ,{field:'price', title:'价格', minWidth:120, sort: true , rowspan:2}
+                    ,{field:'weight', title:'重量(小于等于)', minWidth:120 , rowspan:2}
+                    ,{field:'price', title:'价格(USD)', minWidth:120, sort: true , rowspan:2}
                     ,{field:'', title:'服务商', minWidth:240, colspan:2}
                     ,{field:'method_code', title:'方式' , minWidth:240, colspan:2}
                     ,{field: 'addtime', title:'更新时间', minWidth:120,rowspan:2}
-                    ,{fixed: 'right', title:'操作', toolbar: '#rowbar', minWidth:150 , rowspan:2}
+                    // ,{fixed: 'right', title:'操作', toolbar: '#rowbar', minWidth:150 , rowspan:2}
                 ],
                 [
                     {field:'carrier_code', title:'代码', width:120}
@@ -56,45 +62,54 @@
             ,even: false    //开启隔行背景
         });
 
-        //头工具栏事件
-        table.on('toolbar(toolbar)', function(obj){
-            var checkStatus = table.checkStatus(obj.config.id);
-            switch(obj.event){
-                case 'getCheckData':
-                    var data = checkStatus.data;
-                    layer.alert(JSON.stringify(data));
-                    break;
-                case 'getCheckLength':
-                    var data = checkStatus.data;
-                    layer.msg('选中了：'+ data.length + ' 个');
-                    break;
-                case 'isAll':
-                    layer.msg(checkStatus.isAll ? '全选': '未全选');
-                    break;
-            };
-        });
-
-        //监听行工具事件
-        table.on('tool(rowbar)', function(obj){
-            var data = obj.data;
-            //console.log(obj)
-            if(obj.event === 'del'){
-                layer.confirm('真的删除行么', function(index){
-                    obj.del();
-                    layer.close(index);
-                });
-            } else if(obj.event === 'edit'){
-                layer.prompt({
-                    formType: 2
-                    ,value: data.email
-                }, function(value, index){
-                    obj.update({
-                        email: value
-                    });
-                    layer.close(index);
-                });
+        var uploadInst = upload.render({
+            elem: '#upload' //绑定元素
+            ,url: '/ShippingQuotedPrice/upload'
+            ,accept: 'file'
+            ,exts: 'xls|xlsx|csv'
+            ,field:'importfile'
+            ,before:function (obj){
+                layer.load();
+            }
+            ,done: function(res){
+                //上传完毕回调
+                if(res.code==0){
+                    layer.msg('成功');
+                }else{
+                    layer.alert('失败。'+res.msg);
+                }
+                layer.closeAll('loading');
+                console.log(res);
+            }
+            ,error: function(){
+                //请求异常回调
+                layer.msg('上传失败');
+                layer.closeAll('loading');
             }
         });
+
+        //
+        // //监听行工具事件
+        // table.on('tool(rowbar)', function(obj){
+        //     var data = obj.data;
+        //     //console.log(obj)
+        //     if(obj.event === 'del'){
+        //         layer.confirm('真的删除行么', function(index){
+        //             obj.del();
+        //             layer.close(index);
+        //         });
+        //     } else if(obj.event === 'edit'){
+        //         layer.prompt({
+        //             formType: 2
+        //             ,value: data.email
+        //         }, function(value, index){
+        //             obj.update({
+        //                 email: value
+        //             });
+        //             layer.close(index);
+        //         });
+        //     }
+        // });
     });
 </script>
 {/block}

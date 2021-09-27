@@ -16,6 +16,8 @@ class Index extends BaseController
     }
 
     public function hello(){
+        $ii = '0';
+        dump(ord($ii));
         return 'hello';
     }
 
