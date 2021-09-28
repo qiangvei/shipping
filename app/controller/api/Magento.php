@@ -30,7 +30,7 @@ class Magento
         $data = json_decode($data,true);
         $token = Request::get('token');
         $time = Request::get('time');
-        Log::debug($data);
+        //Log::debug($data);
         $verify = $this->verify($token,$time);
         if($verify){
             $weight = $data['PackageWeight']??0;
@@ -59,7 +59,8 @@ class Magento
                 ->where('weight','>=',$weight)
                 ->group('dest_country_id , dest_region_id , dest_zip , carrier_code , carrier_title , method_code , method_title')
                 ->fieldRaw('min(price) as price , carrier_code , carrier_title , method_code , method_title')
-                ->select();
+                ->select()
+                ->toArray();
             for($i=0;$i<count($dd);$i++){
                 $res[] = [
                     'CarrierCode'=> $dd[$i]['carrier_code'],
@@ -84,12 +85,18 @@ class Magento
     }
 
     public function dd(){
-
-        return json(['a'=>1,'b'=>2]);
+        $res[] = [
+            'CarrierCode'=> 'aa',
+            'CarrierTitle' => 'bb',
+            'MethodCode' => 'cc',
+            'MethodTitle' => 'dd',
+            'Price' => 'ee',
+        ];
+        return json_encode($res);
         $username = Config::get('magento.user.username','');
         $password = Config::get('magento.user.password','');
         $time = time();
         $vtoken = md5(md5($username.$password.$time).$time);
-        return json([$time,$vtoken]);
+        return json_encode([$time,$vtoken]);
     }
 }
