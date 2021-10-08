@@ -6,6 +6,7 @@ namespace app\controller;
 use app\model\SpShippingFee;
 use file\Read;
 use think\facade\Db;
+use think\facade\Log;
 use think\Request;
 
 class ShippingQuotedPrice
@@ -21,12 +22,30 @@ class ShippingQuotedPrice
     }
 
     public function getData(){
-        $data = SpShippingFee::select();
-        $count = SpShippingFee::count();
+        $page =  (int)\request()->get('page',1);
+        $limit = (int)\request()->get('limit',15);
+        $field = \request()->get('field','pk');
+        $order = \request()->get('order','asc');
+        $keyword = \request()->get('keyword','');
+        $weight = \request()->get('weight','');
+
+        $obj = Db::table('Sp_Shipping_Fee');
+        if(trim($keyword)!=''){
+            $obj->whereRaw("(dest_country_id='".$keyword."' or dest_region_id='".$keyword."' or  dest_zip='".$keyword."')");
+        }
+        if((float)$weight>0){
+            $obj->where('weight','>=',$weight)
+                ->group('dest_country_id , dest_region_id , dest_zip , carrier_code , carrier_title , method_code , method_title')
+                ->fieldRaw('pk,dest_country_id , dest_region_id , dest_zip ,  min(weight) as weight  ,  min(price) as price , carrier_code , carrier_title , method_code , method_title,addtime');
+        }
+
+        $count = $obj->count();
+        $data = $obj->page($page,$limit)->order($field,$order)->select()->toArray();
+
         for($i=0;$i<count($data);$i++){
             $data[$i]['right'] = 0;
         }
-        return json(['code'=>0,'msg'=>'完成','count'=>$count,'data'=>$data]);
+        return json(['code'=>0,'msg'=>'完成','count'=>$count,'data'=>$data,'search'=>['keyword'=>$keyword,'weight'=>$weight]]);
     }
 
 

@@ -3,10 +3,9 @@ declare (strict_types = 1);
 
 namespace app\controller\api;
 
-use app\model\SpShippingFee;
+use app\controller\Wanbang;
 use think\facade\Config;
 use think\facade\Db;
-use think\facade\Log;
 use think\facade\Request;
 
 class Magento
@@ -50,11 +49,6 @@ class Magento
             $DestRegionId = $data['DestRegionId']??'*';
             $DestPostcode = $data['DestPostcode']??'*';
             $dd = Db::table('Sp_Shipping_Fee')
-//                ->where([
-//                'dest_country_id'=>$DestCountryId,
-//                'dest_region_id' => $DestRegionId,
-//                'dest_zip' => $DestPostcode
-//            ])
                 ->whereRaw("(dest_country_id='*' or dest_country_id='".$DestCountryId."')")
                 ->where('weight','>=',$weight)
                 ->group('dest_country_id , dest_region_id , dest_zip , carrier_code , carrier_title , method_code , method_title')
@@ -68,6 +62,17 @@ class Magento
                     'MethodCode' => $dd[$i]['method_code'],
                     'MethodTitle' => $dd[$i]['method_title'],
                     'Price' => $dd[$i]['price'],
+                ];
+            }
+            //增加万邦速达的报价
+            $wbq = Wanbang::getQuotes($DestCountryId,$weight);
+            for($i=0;$i<count($wbq);$i++){
+                $res[] = [
+                    'CarrierCode'=> $wbq[$i]['carrier_code'],
+                    'CarrierTitle' => $wbq[$i]['carrier_title'],
+                    'MethodCode' => $wbq[$i]['method_code'],
+                    'MethodTitle' => $wbq[$i]['method_title'],
+                    'Price' => $wbq[$i]['price'],
                 ];
             }
         }

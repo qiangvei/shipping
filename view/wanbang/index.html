@@ -47,28 +47,29 @@
         var upload = layui.upload;
         var thisTable = table.render({
             elem: '#table'
-            ,url:'/ShippingQuotedPrice/getData'
+            ,url:'/wanbang/getData'
             ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
             ,title: '运费报价数据表'
             ,cols: [
                 [
                     {type: 'checkbox', rowspan:2}
                     ,{field:'pk', title:'ID', width:80, unresize: true, sort: true , rowspan:2}
-                    ,{field:'dest_country_id', title:'国家', minWidth:120, sort: true , rowspan:2}
-                    ,{field:'dest_region_id', title:'地区', minWidth:120, sort: true , rowspan:2}
-                    ,{field:'dest_zip', title:'邮编', minWidth:120 , rowspan:2}
-                    ,{field:'weight', title:'重量(小于等于)', minWidth:120 , rowspan:2}
-                    ,{field:'price', title:'价格(USD)', minWidth:120, sort: true , rowspan:2}
-                    ,{field:'', title:'服务商', minWidth:240, colspan:2}
-                    ,{field:'method_code', title:'方式' , minWidth:240, colspan:2}
-                    ,{field: 'addtime', title:'更新时间', minWidth:120,rowspan:2}
+                    ,{field:'dest_country_id', title:'国家', width:110, sort: true , rowspan:2}
+                    ,{field:'weight_min', title:'重量下限', width:110, sort: true , rowspan:2}
+                    ,{field:'weight_max', title:'重量上限', width:110 , rowspan:2}
+                    ,{field:'unit_price', title:'单价(USD/kg)', width:120 , rowspan:2}
+                    ,{field:'handling_fee', title:'处理费(USD)', width:130, sort: true , rowspan:2}
+                    ,{field:'', title:'服务商', minWidth:280, colspan:2}
+                    ,{field:'', title:'方式' , minWidth:350, colspan:3}
+                    ,{field: 'addtime', title:'更新时间', width:120,rowspan:2}
                     // ,{fixed: 'right', title:'操作', toolbar: '#rowbar', minWidth:150 , rowspan:2}
                 ],
                 [
-                    {field:'carrier_code', title:'代码', width:120}
-                    ,{field:'carrier_title', title:'标题', width:100}
-                    ,{field:'method_code', title:'代码', width:120}
-                    ,{field: 'method_title', title:'标题', width:120}
+                    {field:'carrier_code', title:'代码', width:130}
+                    ,{field:'carrier_title', title:'标题', width:150}
+                    ,{field:'method_code', title:'代码', width:130}
+                    ,{field: 'method_title', title:'标题', width:220}
+                    ,{field: 'method_title_cn', title:'中文名称(导入文件需转为utf8)'}
                 ]
             ]
             ,page: true
@@ -112,7 +113,7 @@
 
         var uploadInst = upload.render({
             elem: '#upload' //绑定元素
-            ,url: '/ShippingQuotedPrice/upload'
+            ,url: '/wanbang/upload'
             ,accept: 'file'
             ,exts: 'xls|xlsx|csv'
             ,field:'importfile'
