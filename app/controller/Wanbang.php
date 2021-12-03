@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace app\controller;
 
+use common\CountryCode;
 use file\Read;
 use think\facade\Db;
 use think\facade\View;
@@ -52,9 +53,10 @@ class Wanbang
         $data = Read::read($file->getRealPath());
         if(is_array($data)){
             $insertData = [];
+            $countryMapData = new CountryCode();
             for($i=1;$i<count($data);$i++){
                 if(count($data[$i])<9){continue;}
-                $d['dest_country_id'] = trim($data[$i][0]);
+                $d['dest_country_id'] = $countryMapData->getCode2ByChineseName($data[$i][0]);
                 $d['weight_min'] = (float)$data[$i][1];
                 $d['weight_max'] = (float)$data[$i][2];
                 $d['unit_price'] = (float)$data[$i][3];
